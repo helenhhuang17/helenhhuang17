@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6 white-border">
+        Task 3: Find the missing nodes between two graphs
+    </div>
+    <div class="col-6">
+        Condition: Virtual Reality, 3D Graph
+    </div>
+</div>
+
+<div class="page-container">
+    <h1> Condition <span id="condition"></span>: Virtual Reality (VR) </h1>
+
+    The virtual reality portion of this study will be completed using the VR headset itself. Complete the following steps in order:
+    <ol>
+        <li>Turn away from the computer and indicate to the PI that you are ready for the VR portion.
+            They will hand you the headset to put on, and this training and task will be completed from there.</li>
+        <li>Click CONTINUE</li>
+    </ol>
+
+    <a id="nextCondition" href="T3Results.html">
+        <button type="button" class="btn btn-primary" onclick="addIteration()">Continue</button>
+    </a>
+</div>
+
+<script>
+    document.getElementById("condition").innerHTML = localStorage.iteration
+</script>
+
+<script src="../../js/main.js"></script>
+
+</body>
+</html>

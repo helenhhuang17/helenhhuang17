@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6 white-border">
+        Task 2: Count the number of triangles
+    </div>
+    <div class="col-6">
+        Condition: Mouse, 2D Graph
+    </div>
+</div>
+
+<div class="page-container">
+    <h1> Condition <span id="condition"></span>: Mouse, 2D Graph </h1>
+    <img src="../../images/mouse-img.png" class="training-img">
+    To operate the mouse:
+    <ul>
+        <li> LEFT CLICK on a node to select it </li>
+        <li> LEFT CLICK and DRAG to pan your view of the graph</li>
+        <li> SCROLL using the scroll ring to zoom in and out of the screen </li>
+    </ul>
+    When you are ready, click PRACTICE to begin the practice trials.</p>
+
+    <a href="T2C1practice1.html"><button type="button" class="btn btn-primary">Practice</button></a>
+</div>
+
+<script>
+    document.getElementById("condition").innerHTML = localStorage.iteration
+</script>
+
+<script src="../../js/main.js"></script>
+
+</body>
+</html>

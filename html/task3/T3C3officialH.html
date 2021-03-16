@@ -1,0 +1,385 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.min.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+<!--    <script src="https://d3js.org/d3.v4.min.js"></script>-->
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6">
+        Task 3: Find the missing nodes between two graphs
+    </div>
+    <div class="col-6">
+        Condition: Trackball Mouse, 3D Graph
+    </div>
+</div>
+
+<div class="page-container">
+    <div class="row">
+        <div id="original" class="graph-side main-vis"></div>
+        <div id="new" class="graph-side"></div>
+    </div>
+
+    <a id="nextCondition" href="T3C4training.html">
+        <button type="button" class="btn btn-primary" onclick="stopTimer(); addIteration()">Done</button>
+    </a>
+    <div class="stopwatch" id="timer" style="display: none;"></div>
+</div>
+
+<script>
+
+    // parts of stopwatch code from https://jsbin.com/IgaXEVI/167/edit?html,js,output
+    var Stopwatch = function(elem, options) {
+
+        // set vars
+        var timer       = createTimer(),
+            offset,
+            clock,
+            interval,
+            zoomInterval;
+
+        // default options
+        options = options || {};
+        options.delay = options.delay || 1;
+        options.delayZoom = 100;
+
+        // append elements
+        elem.appendChild(timer);
+
+        // initialize
+        reset();
+
+        // private functions
+        function createTimer() {
+            return document.createElement("span");
+        }
+
+        function start() {
+            if (!interval) {
+                offset   = Date.now();
+                interval = setInterval(update, options.delay);
+                zoomInterval = setInterval(zoomCountFunc, options.delayZoom);
+            }
+        }
+
+        function stop() {
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+                localStorage.setItem("official_T3_C3_2", (clock/1000).toString())
+                localStorage.setItem("oscore_T3_C3_2", score.toString())
+                localStorage.setItem("onodes_T3_C3_2", totalNodes.toString())
+                localStorage.setItem("ozoom_T3_C3_2", zoomCount.toString())
+                localStorage.setItem("opanCount_T3_C3_2", panCount.toString())
+                localStorage.setItem("orotate_T3_C3_2", rotate.toString())
+                official2T3C3();
+            }
+        }
+
+        function reset() {
+            clock = 0;
+            render(0);
+        }
+
+        function update() {
+            clock += delta();
+            render();
+        }
+
+        function zoomCountFunc() {
+            zoomCount.push(zoomAmt);
+            rotate.push(rotateAmt);
+            //console.log(zoomCount);
+        }
+
+        function render() {
+            timer.innerHTML = clock/1000;
+        }
+
+        function delta() {
+            var now = Date.now(),
+                d   = now - offset;
+
+            offset = now;
+            return d;
+        }
+
+        // public API
+        this.start  = start;
+        this.stop   = stop;
+        this.reset  = reset;
+    };
+
+    // programmatic examples
+    let a = document.getElementById("timer");
+    timer = new Stopwatch(a);
+    timer.start();
+
+    function stopTimer() {
+        timer.stop();
+    }
+
+    // score
+    let score = 0; // number correct
+    let realScore = 0; // total number of correct
+    let totalNodes = 0; // total selected
+    let zoomAmt = 0;
+    let zoomCount = [];
+    let answerList = [];
+    let linkList = [];
+    let panCount = 0;
+    let rotateAmt = "";
+    let rotate = [];
+
+    function checkPan() {
+        panCount += 1;
+        //console.log(panCount)
+    }
+
+    $('#original').on("contextmenu", function() {
+        checkPan();
+    })
+
+    d3.json(localStorage.data2).then(function(json) {
+        (json.nodes).forEach(function(node) {
+            console.log(node)
+            if (node.value === 2) {
+                realScore += 1;
+            }
+        })
+    });
+
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Creates the force-directed graph
+
+    const Graph1 = ForceGraph3D();
+
+    Graph1(document.getElementById("original"))
+        .width(625)
+        .height(590)
+        .warmupTicks(200)
+        .cooldownTicks(10)
+        .nodeColor(function(node) {
+            //nodeCount += 1
+            if (selectedNodes1.has(node)) {
+                return 'red'
+            } else if (node.value === 1) {
+                answerList.push(node.id)
+                return '#000000'
+            } else {
+                return '#000000'
+            }
+        })
+        // .nodeLabel(d => d.id)
+        .forceEngine('ngraph')
+        .jsonUrl(localStorage.data2)
+        .backgroundColor("white")
+        .linkOpacity(1)
+        .linkColor(link => '#999')
+        .linkWidth(.5)
+        .linkMaterial((link) => {
+            if (answerList.includes(link.source) || answerList.includes(link.target)) {
+                linkList.push(link)
+            }
+            linkList.forEach(function (link) {
+                link.__lineObj.visible = false;
+            })
+        })
+        .onNodeClick(function(node, event) {
+            if (node.selected === 0) {
+                node.selected = 1
+                this.nodeColor("red")
+
+                if (node.value === 1) {
+                    score += 1
+                }
+                totalNodes += 1;
+            } else {
+                node.selected = 0
+
+                if (node.value === 1) {
+                    score -= 1
+                }
+                totalNodes -= 1;
+            }
+
+            if (event.ctrlKey || event.shiftKey || event.altKey) {
+                selectedNodes1.has(node) ? selectedNodes1.delete(node) : selectedNodes1.add(node);
+            } else {
+                selectedNodes1.has(node) ? selectedNodes1.delete(node) : selectedNodes1.add(node);
+            }
+
+            Graph1.nodeColor(Graph1.nodeColor());
+        })
+
+    let selectedNodes1 = new Set();
+
+    // Creates the new scene and adds it to the RHS
+
+    let oldScene = Graph1.scene();
+    let oldCamera = Graph1.camera();
+    let newScene, newCamera, newRenderer;
+    // Connects the two graphs together
+
+    let isInitialized = false;
+
+    const thisAnimate = function () {
+        requestAnimationFrame( thisAnimate );
+
+        if(Graph1.scene().children.length > 1 && !isInitialized) {
+            newCamera = oldCamera.clone();
+            newScene = oldScene.clone();
+            answerList.forEach(function(answer) {
+                console.log(newScene.children[3].children[answer])
+                newScene.children[3].children[answer].visible = false;
+            })
+            newScene.background = new THREE.Color( 0xFFFFFF );
+
+            // newCamera = new window.THREE.PerspectiveCamera( 75, 500 / 575, 0.1, 1000 );
+
+            newRenderer = new THREE.WebGLRenderer( { antialias: true} );
+            newRenderer.setSize( 635 , 590 );
+            document.getElementById("new").appendChild( newRenderer.domElement );
+
+            isInitialized = true;
+        }
+
+        Graph1
+            .linkMaterial((link) => {
+                if (answerList.includes(link.source) || answerList.includes(link.target)) {
+                    linkList.push(link)
+                }
+                linkList.forEach(function (link) {
+                    link.__lineObj.visible = true;
+                })
+            })
+
+        if(isInitialized){
+            zoomAmt = oldCamera.position.z;
+
+            newCamera.position.x = oldCamera.position.x;
+            newCamera.position.y = oldCamera.position.y;
+            newCamera.position.z = oldCamera.position.z;
+
+            newCamera.rotation.x = oldCamera.rotation.x;
+            newCamera.rotation.y = oldCamera.rotation.y;
+            newCamera.rotation.z = oldCamera.rotation.z;
+
+        }
+
+        if(newScene)
+            newRenderer.render( newScene, newCamera );
+    };
+
+    setTimeout(thisAnimate, 2000)
+
+    window.scene = Graph1.scene();
+
+    let graph = document.getElementsByClassName("scene-container")[0];
+
+    graph.requestPointerLock = graph.requestPointerLock ||
+        graph.mozRequestPointerLock;
+
+    document.exitPointerLock = document.exitPointerLock ||
+        document.mozExitPointerLock;
+
+    document.onclick = function() {
+        graph.requestPointerLock();
+    };
+
+    document.addEventListener('pointerlockchange', lockChangeAlert, false);
+    document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+    graph.addEventListener('mousewheel', mousewheel, false );
+
+    function lockChangeAlert() {
+        if (document.pointerLockElement === graph ||
+            document.mozPointerLockElement === graph) {
+            console.log('The pointer lock status is now locked');
+            document.addEventListener("mousemove", moveToRotate, false);
+        } else {
+            console.log('The pointer lock status is now unlocked');
+            document.removeEventListener("mousemove", moveToRotate, false);
+        }
+    }
+
+    function moveToRotate(e){
+
+        console.log(Graph1.scene().children[3])
+
+        Graph1.scene().children[3].rotation.y += e.movementX/100;
+        Graph1.scene().children[3].rotation.x += e.movementY/100;
+
+        let rotateAmtx = Graph1.scene().children[3].rotation.x
+        let rotateAmty = Graph1.scene().children[3].rotation.y
+        rotateAmt = "(" + rotateAmtx + ", " + rotateAmty +")"
+
+        newScene.children[3].rotation.y += e.movementX/100;
+        newScene.children[3].rotation.x += e.movementY/100;
+
+        x += e.movementX;
+        y += e.movementY;
+
+        console.log("x "  + x + " y " + y)
+    }
+
+    let x = 0;
+    let y = 0;
+
+    function mousewheel(e) {
+
+        var d = ((typeof e.wheelDelta != "undefined")?(-e.wheelDelta):e.detail);
+        d = 100 * ((d>0)?1:-1);
+        var cPos = Graph1.camera().position;
+        if (isNaN(cPos.x) || isNaN(cPos.y) || isNaN(cPos.y)) return;
+
+        mb = d>0 ? 1.1 : 0.9;
+        cPos.x = cPos.x * mb;
+        cPos.y = cPos.y * mb;
+        cPos.z = cPos.z * mb;
+    }
+
+    function animate() {
+        requestAnimationFrame( animate );
+        zoomAmt = oldCamera.position.z;
+    }
+
+    animate();
+
+    console.log(answerList.length)
+
+</script>
+
+<script src="../../js/main.js"></script>
+
+</body>
+</html>

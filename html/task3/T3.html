@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6">
+        Task 3: Find the missing nodes between two graphs
+    </div>
+    <div class="col-6">
+    </div>
+</div>
+
+<div class="page-container">
+    <h1> Task 3 </h1>
+    <p class="subtitle">Find the missing nodes between two graphs</p>
+    <p> In this task, you will be given two graphs side by side. The graphs are identical, except that the graph on the right will always be missing <span class="emphText">FOUR nodes</span>, as well as missing links associated with those nodes. In this task, you must identify which nodes are missing from the right graph, and then <span class="emphText">select those missing nodes in the left graph</span>.</p><br>
+
+    <p>You can manipulate the LEFT graph inside its border, and the right graph will move in the same way. If you accidentally select a node, select it again to deselect that node. When you are ready, click CONTINUE.</p>
+
+    <img src="../../images/side-graph.gif" class="gif"/>
+
+    <a id="nextCondition" href="T3C1training.html">
+        <button type="button" class="btn btn-primary" id=3 onclick="setTask(this.id); setIteration()">Continue</button>
+    </a>
+</div>
+
+<script src="../../js/main.js"></script>
+
+</body>
+</html>

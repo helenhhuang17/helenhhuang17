@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6">
+        Task 1: Select the common nodes between two highlighted nodes
+    </div>
+    <div class="col-6">
+        Condition: Mouse, 3D Graph
+    </div>
+</div>
+
+<div class="page-container">
+    <div id="3d-graph" class="main-vis"></div>
+
+    <button type="button" class="btn btn-primary" onclick=" stopTimer(); showResults()">See Results</button>
+    <div class="stopwatch" id="timer" style="display: none;"></div>
+
+    <script>
+
+        var Stopwatch = function(elem, options) {
+
+            // set vars
+            var timer       = createTimer(),
+                offset,
+                clock,
+                interval,
+                zoomInterval;
+
+            // default options
+            options = options || {};
+            options.delay = options.delay || 1;
+            options.delayZoom = 100;
+
+            // append elements
+            elem.appendChild(timer);
+
+            // initialize
+            reset();
+
+            // private functions
+            function createTimer() {
+                return document.createElement("span");
+            }
+
+            function start() {
+                if (!interval) {
+                    offset   = Date.now();
+                    interval = setInterval(update, options.delay);
+                    zoomInterval = setInterval(zoomCountFunc, options.delayZoom);
+                }
+            }
+
+            function stop() {
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                    localStorage.setItem("practice_T1_C2_2", (clock/1000).toString())
+                    localStorage.setItem("pscore_T1_C2_2", score.toString())
+                    localStorage.setItem("pnodes_T1_C2_2", totalNodes.toString())
+                    localStorage.setItem("pzoom_T1_C2_2", zoomCount.toString())
+                    localStorage.setItem("ppanCount_T1_C2_2", panCount.toString())
+                    localStorage.setItem("protateCount_T1_C2_2", rotateCount.toString())
+                    practice2T1C2();
+                }
+            }
+
+            function reset() {
+                clock = 0;
+                render(0);
+            }
+
+            function update() {
+                clock += delta();
+                render();
+            }
+
+            function zoomCountFunc() {
+                zoomCount.push(zoomAmt);
+                //console.log(zoomCount);
+            }
+
+            function render() {
+                timer.innerHTML = clock/1000;
+            }
+
+            function delta() {
+                var now = Date.now(),
+                    d   = now - offset;
+
+                offset = now;
+                return d;
+            }
+
+            // public API
+            this.start  = start;
+            this.stop   = stop;
+            this.reset  = reset;
+        };
+
+        // programmatic examples
+        let a = document.getElementById("timer");
+        timer = new Stopwatch(a);
+        timer.start();
+
+        function stopTimer() {
+            timer.stop();
+        }
+
+        // score
+        let score = 0;
+        let realScore = 0;
+        let totalNodes = 0;
+        let zoomAmt = 0;
+        let zoomCount = [];
+        let panCount = 0;
+        let rotateCount = 0;
+
+        function checkPan() {
+            panCount += 1;
+            //console.log(panCount)
+        }
+
+        $('#3d-graph').on("contextmenu", function() {
+            checkPan();
+        })
+
+        function checkRotate() {
+            rotateCount += 1;
+        }
+
+        $('#3d-graph').on("click", function() {
+            checkRotate();
+        })
+
+        d3.json(localStorage.practice2).then(function(json) {
+            (json.nodes).forEach(function(node) {
+                console.log(node)
+                if (node.value === 2) {
+                    realScore += 1;
+                }
+            })
+        });
+
+        // Inspiration from https://bl.ocks.org/vasturiano/02affe306ce445e423f992faeea13521 and node selection from https://github.com/vasturiano/3d-force-graph/blob/master/example/multi-selection/index.html
+        function getGraphDataSets() {
+            const loadDataSet = function(Graph) {
+                Graph
+                    .width(1250)
+                    .height(600)
+                    .warmupTicks(200)
+                    .cooldownTicks(10)
+                    .nodeColor(function(node) {
+                        if (node.value === 1) {
+                            return '#00BFFF'
+                        } else if (selectedNodes.has(node)) {
+                            return 'red'
+                        } else {
+                            return '#000000'
+                        }
+                    })
+                    //.nodeLabel(node => node.id)
+                    .forceEngine('ngraph')
+                    .jsonUrl(localStorage.practice2)
+                    .backgroundColor("white")
+                    .linkOpacity(.6)
+                    .linkColor(link => '#999')
+                    .linkWidth(.5)
+                    .onNodeClick(function(node, event) {
+                         if (node.selected === 0) {
+                            node.selected = 1
+
+                            if (node.value === 2) {
+                                score += 1
+                            }
+                            totalNodes += 1;
+                        } else {
+                            node.selected = 0
+
+                            if (node.value === 2) {
+                                score -= 1
+                            }
+                            totalNodes -= 1;
+                        }
+
+                        if (event.ctrlKey || event.shiftKey || event.altKey) {
+                            selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+                        } else {
+                            selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+                        }
+
+                        Graph.nodeColor(Graph.nodeColor()); // update color of selected nodes
+                    })
+                    //.onZoom(console.log("hi"))
+            };
+            return [loadDataSet];
+        }
+
+        let selectedNodes = new Set();
+
+        const Graph = ForceGraph3D()
+        (document.getElementById("3d-graph"));
+
+        let curDataSetIdx;
+        const dataSets = getGraphDataSets();
+
+        function loadData() {
+            curDataSetIdx = 0;
+            const dataSet = dataSets[curDataSetIdx];
+
+            Graph.resetProps(); // Wipe current state
+            dataSet(Graph); // Load data set
+
+        };
+
+        loadData();
+
+        let camera = Graph.camera();
+
+        function animate() {
+            requestAnimationFrame( animate );
+            zoomAmt = camera.position.z;
+        }
+
+        animate();
+
+        function showResults() {
+            document.body.innerHTML = "";
+            document.body.innerHTML =
+                "<div class=\"row user-info-header\">\n" +
+                "    <div class=\"col-6\">\n" +
+                "        Task 1: Select the common nodes between two highlighted nodes\n" +
+                "    </div>\n" +
+                "    <div class=\"col-6\">\n" +
+                "        Condition: Mouse, 3D Graph\n" +
+                "    </div>\n" +
+                "</div>\n" +
+                "\n" +
+                "<div class=\"page-container\">\n" +
+                "    <div class=\"training-result\">\n" +
+                "        <h2> You correctly selected <span id=\"score\"></span>/<span id=\"realScore\"></span> of the nodes. </h2>\n" +
+                "    </div>\n" +
+                "    <p> If you would like to redo this practice round, click REDO below. </p>\n" +
+                "    <h2 class='official-trials'> If you are ready to begin the 2 official trials, click BEGIN TASK. </h2>\n" +
+                "\n" +
+                "    <a href=\"T1C2practice2.html\"><button type=\"button\" class=\"btn btn-primary left-button\">Redo</button></a>\n" +
+                "    <a href=\"T1C2officialE.html\"><button type=\"button\" class=\"btn btn-primary\">Begin Task</button></a>\n" +
+                "</div>"
+            ;
+            document.getElementById("score").innerHTML = score;
+            document.getElementById("realScore").innerHTML = realScore;
+        }
+
+    </script>
+</div>
+
+<script src="../../js/main.js"></script>
+
+</body>
+</html>

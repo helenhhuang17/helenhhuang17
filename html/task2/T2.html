@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6">
+        Task 2: Count the number of triangles
+    </div>
+    <div class="col-6">
+    </div>
+</div>
+
+<div class="page-container">
+    <h1> Task 2 </h1>
+    <p class="subtitle">Count the number of triangles</p>
+    <p> In this task, you will be given a graph and asked to count all triangles. <span class="emphText">Triangles are formed by three nodes and three links connecting those nodes </span>. An example with 10 triangles is shown below. Be careful not to double-count triangles. When you are ready, please click CONTINUE.</p>
+    <p/>
+    <table>
+        <tr>
+            <td><img class="countTriangles" src="../../images/triangle1.png"></td>
+            <td><img class="countTriangles" src="../../images/triangle2.png"></td>
+            <td><img class="countTriangles" src="../../images/triangle3.png"></td>
+            <td><img class="countTriangles" src="../../images/triangle4.png"></td>
+            <td><img class="countTriangles" src="../../images/triangle5.png"></td>
+        </tr>
+        <tr>
+            <td><img class="countTriangles" src="../../images/triangle8.png"></td>
+            <td><img class="countTriangles" src="../../images/triangle9.png"></td>
+            <td><img class="countTriangles" src="../../images/triangle7.png"></td>
+            <td><img class="countTriangles" src="../../images/triangle6.png"></td>
+            <td><img class="countTriangles" src="../../images/triangle10.png"></td>
+        </tr>
+    </table>
+    <p/>
+
+    <a id="nextCondition" href="T2C1training.html">
+        <button type="button" class="btn btn-primary" id=2 onclick="setTask(this.id); setIteration()">Continue</button>
+    </a>
+</div>
+
+<script src="../../js/main.js"></script>
+
+</body>
+</html>

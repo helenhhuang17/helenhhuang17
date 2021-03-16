@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header"></div>
+
+<div class="page-container">
+    <h1>The Effect of Immersion on Analyzing Node-Link Diagrams</h1>
+    <p class="subtitle">Key Information</p>
+        <p>The following is a short summary of this study to help you decide whether or not to be a part of this study. More detailed information is listed later on in this form. </p>
+
+    <p class="subtitle">Why am I being invited to take part in a research study? </p>
+        <p>We have invited you to take part in a research study because you have responded to our emails, posters, or social media posts used to advertise this research study.  </p>
+
+    <p class="subtitle">Why am I being invited to take part in a research study? </p>
+    <ul>
+        <li>Someone will explain this research study to you.</li>
+        <li>Whether or not you take part is up to you.</li>
+        <li>You can choose not to take part.</li>
+        <li>You can agree to take part and later change your mind.</li>
+        <li>Your decision will not be held against you.</li>
+        <li>You may discuss your decision with your family, your friends and/or your doctor.</li>
+        <li>You can ask all the questions you want before you decide.</li>
+    </ul>
+
+    <p class="subtitle">Why is this research being done?</p>
+    <p>We are interested in analyzing the effects of immersion and pan and zoom interaction on a user’s ability to analyze a node-link diagram. This study compares different technologies used for analyzing these diagrams. </p>
+    <br/>
+
+    <button type="button" class="collapsible">More Details</button>
+    <div class="content">
+        <p class="subtitle">What is the purpose of this research?</p>
+        <p>The purpose of this study is to assess whether immersive and multidimensional technology can increase the understanding and readability of node-link diagrams. We're also interested in analyzing the effects of immersion and pan and zoom interaction on a user’s ability to analyze these diagrams. </p><br/>
+        <p>With the rise of big data and improved data collection capacities, informative network diagrams have become larger and denser. Network diagrams -- also known as node link diagrams -- are represented by individual nodes connected by links that show a relationship between two nodes. As graph complexity increases and more of these nodes and links are needed, traditional data analysis tools on 2D computer screens become more cluttered and difficult to use. We want to know: Can more immersive and multidimensional technologies (like trackball mice or virtual reality head-mounted displays) increase the readability and comprehensibility of node-link diagrams? </p><br/>
+        <p>Trackball mice are mouse-like devices with a spherical ball that a user can roll in place. The sphere directly maps to a 3D object on a screen such that rolling the ball will cause the 3D object to move accordingly. We are interesting to see if manipulating a tangible 3D object has benefits for understanding a 3D graph. However, trackballs still operate with a 2D screen. Visualization techniques on these screens has two main problems. 1) It can be unintuitive and difficult to visualize 3 dimensional graphs on 2 dimensional screens, and 2) Displays with limited screen sizes are difficult to scale in order to keep up with the growing complexity of data. These issues signal the need for new approaches. </p><br/>
+        <p>Virtual Reality head-mounted displays (VR HMDs) can use the space around the user as a display space. They can allow users to track hand movements and interactions with 2D and 3D graphics within the space, enabling new applications in so-called immersive analytics. Immersive analytics is an emerging research field that focuses on applying engaging, embodied display and interaction techniques for data visualization and analytics.</p>
+    </div>
+
+    <p class="subtitle">How long will the research last and what will I need to do?</p>
+    <p>We expect that you will be in this research study for one to one and a half hours.</p><br/>
+    <p>You will be asked to complete three tasks in four different data analysis environments. For example, you will be asked to find the common node between two highlighted nodes in the diagrams we will show you.</p><br/>
+    <p>More detailed information about the study procedures can be found under the "Detailed Study Outline" section.</p>
+
+    <p class="subtitle">Is there any way being in this study could be bad for me? </p>
+    <p>Because you will be fully immersed in a virtual environment at some point during the study, there is a small chance that you may experience some discomfort, nausea, motion sickness, disorientation, headache, fatigue eye strain, or dry eyes. The headset will be next to your skin, so there is a possibility of skin irritation.</p><br/>
+    <p>We take steps to minimize the mentioned risks. If you feel any of these symptoms in the study, feel free to take a break for as long as you need. You may also end participation at any time.</p><br/>
+    <p>More detailed information about the risks of this study can be found under the “Detailed Risks” section.</p>
+    <br/>
+    <button type="button" class="collapsible">Detailed Risks</button>
+    <div class="content">
+        <p class="subtitle"> Detailed Risks </p>
+        <p>Because you will be fully immersed in a virtual environment at some point during the study, there is a small chance that you may experience some discomfort, nausea, motion sickness, disorientation, headache, fatigue eye strain, or dry eyes. The headset will be next to your skin, so there is a possibility of skin irritation. We take steps to minimize the mentioned risks. The following are some of these steps:
+        <ul>
+            <li>The instruction room will be quiet, entirely illuminated, and provided with fresh air circulation</li>
+            <li>The instructor will always stay with the participant if the participant needs anything</li>
+            <li>The instructor will help with setting up the HMD and make sure that the display is working properly and the device is calibrated correctly. This can be done without interacting directly with the participant</li>
+            <li>Participants will not experience any flashing or visual distracting and discomforting scenes in any condition. No sound is involved in the study</li>
+        </ul>
+        <p>You may also end participation at any time.</p>
+    </div>
+
+    <p class="subtitle">Will being in this study help me in any way? </p>
+    <p>We cannot promise any benefits to you or others from your taking part in this research. However, possible benefits may include getting to experience and use virtual reality. </p>
+
+    <p class="subtitle">What can I expect if I take part in this research?</p>
+        <p>We expect that this study will take 1 hour to 1.5 hours. You will complete 3 task, and you will complete each task in 4 different conditions. In each condition, you will complete two practice trials and then two official trials. The structure of the study is listed below (with the first task expanded), as are the devices used in this study.</p>
+        <ul>
+            <li>Task 1</li>
+            <ul>
+                <li>Condition 1</li>
+                <ul>
+                    <li>Practice Trial 1</li>
+                    <li>Practice Trial 2</li>
+                    <li>Official Trial 1</li>
+                    <li>Official Trial 2</li>
+                </ul>
+                <li>Condition 2</li>
+                <ul>
+                    <li>Practice Trial 1</li>
+                    <li>Practice Trial 2</li>
+                    <li>Official Trial 1</li>
+                    <li>Official Trial 2</li>
+                </ul>
+                <li>Condition 3</li>
+                <ul>
+                    <li>Practice Trial 1</li>
+                    <li>Practice Trial 2</li>
+                    <li>Official Trial 1</li>
+                    <li>Official Trial 2</li>
+                </ul>
+                <li>Condition 4</li>
+                <ul>
+                    <li>Practice Trial 1</li>
+                    <li>Practice Trial 2</li>
+                    <li>Official Trial 1</li>
+                    <li>Official Trial 2</li>
+                </ul>
+            </ul>
+            <li>Task 2</li>
+            <li>Task 3</li>
+            <li>Post-study Survey</li>
+        </ul>
+        <br/>
+        <button type="button" class="collapsible">Detailed Study Outline</button>
+        <div class="content">
+            <p class="subtitle">Detailed Study Outline</p>
+            <p> The PI (Helen Huang) will conduct the study with you. The study compares four different conditions: </p>
+            <ol>
+                <li>2D graphs on a 2D screen with a computer mouse</li>
+                <li>3D graphs on a 2D screen with a computer mouse</li>
+                <li>3D graphs on a 2D screen with a trackball mouse</li>
+                <li>3D graphs in a 3D virtual reality environment with hand-tracking.</li>
+            </ol>
+            <p>One participant will take part in the study at a time in the following steps:</p>
+            <ol>
+                <li>WELCOME (2 minutes): the participant will be welcomed and instructed about the purpose of the study (see above), the duration of the study (around 1.5 hours), as well as the setup.</li>
+                <li>CONSENT (3 minutes): The participant will then read the consent form and sign it if he/she agrees and wants to proceed with the study. The instructor will inform the participant that they can take breaks at anytime they want. They can also withdraw at any stage.</li>
+                <li>INTRODUCTION (5 minutes): The instructor will introduce and explain each of the tasks the user will be asked to complete. The participant will be encouraged to ask questions.</li>
+                <li>STUDY (70 minutes): The participant will go through four rounds, one for each condition (see above). We plan to allocate 10 minutes for condition 1, 15 minutes for condition 2, 20 minutes for condition 3, and 25 minutes for condition 4. At the beginning of each round, the instructor will first introduce and explain the graph as well as what interactions the user can perform. Then the user will be lead through 5-15 minutes of training performing 3 tasks on the training graph. Finally, the remaining time per round will be used for completing the same tasks on new graphs where the response time and the user’s answers will be recorded by the program.</li>
+                <li>END (10 minutes): The participant will be presented with a quick survey, asking him/her to rate their experience and demographics. The post-study survey is in the attached materials. He/she will get the study compensation paid in cash ($20).</li>
+            </ol>
+            <p>The tasks will be:</p>
+            <ol>
+                <li>Select common nodes between two highlighted nodes</li>
+                <li>Count the number of triangles formed by the graph</li>
+                <li>Find the missing link between two node-link diagrams</li>
+            </ol>
+        </div>
+
+        <p class="subtitle">What technology will I be using in this study?</p>
+        <div class="row index2">
+            <div class="col-4">
+                <p>Mouse</p><br>
+                <img src="../images/mouse-img.png"/>
+            </div>
+            <div class="col-4">
+                <p>Trackball Mouse</p><br>
+                <img src="../images/trackball-img.jpeg"/>
+            </div>
+            <div class="col-4">
+                <p>VR Headset</p><br>
+                <img src="../images/vr-img.jpg"/>
+            </div>
+        </div>
+
+    <p class="subtitle">What happens if I say yes, but I change my mind later?</p>
+    <p>You can leave the research at any time; it will not be held against you.</p>
+
+    <p class="subtitle">If I take part in this research, how will my privacy be protected? What happens to the information you collect?</p>
+    <p> Efforts will be made to limit the use and disclosure of your personal information, including research study records, to people who have a need to review this information. We cannot promise complete secrecy. Organizations that may inspect and copy your information include the IRB and other representatives of this organizations involved in this research. </p><br/>
+    <p>We de-identify the data we collect in the study. Findings from the study will only be released in an aggregated or summarized manner. The information collected as part of this research will not be used or distributed for future research studies. </p>
+
+    <p class="subtitle">What else do I need to know?</p>
+    <p> If you agree to take part in this research study, we will pay you $20 for your time and effort. There will be no cost to you for participating in this study. </p>
+    <br/>
+    <button type="button" class="collapsible">More Details</button>
+    <div class="content">
+        <p class="subtitle">Who can I talk to?</p>
+        <p> If you have questions, concerns, or complaints, or think the research has hurt you, talk to the research team at huangh@college.harvard.edu.</p><br/>
+        <p> This research has been reviewed and approved by the Harvard University Area Institutional Review Board (“IRB”). You may talk to them at (617) 496-2847 or cuhs@harvard.edu if: </p>
+        <ul>
+            <li>Your questions, concerns, or complaints are not being answered by the research team.</li>
+            <li>You cannot reach the research team.</li>
+            <li>You want to talk to someone besides the research team.</li>
+            <li>You have questions about your rights as a research subject.</li>
+            <li>You want to get information or provide input about this research.</li>
+        </ul>
+    </div>
+
+<!--    <p class="subtitle">If you would like to read more details about this study, feel free to click the MORE DETAILS button. Otherwise, proceed to the Statement of Consent.</p>-->
+<!--        <a href="moreDetails.html"><button type="button" class="btn btn-primary btn-more-info">More Details</button></a>-->
+
+    <p class="subtitle">Statement of Consent</p>
+        <p>I have read the information in this consent form including risks and possible benefits. All my questions about the research have been answered to my satisfaction. I understand that I am free to withdraw at any time without penalty or loss of benefits to which I am otherwise entitled. Please click I AGREE to continue with the study.</p>
+
+    <a href="task1/T1.html"><button type="button" class="btn btn-primary btn-consent">I Agree</button></a>
+
+</div>
+
+<script src="../js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6">
+        Task 1: Select the common nodes between two highlighted nodes
+    </div>
+    <div class="col-6">
+        Feedback
+    </div>
+</div>
+
+<div class="page-container results">
+    <p class="subtitle"> You will now provide feedback on your experience with the four conditions in this task. Please fill out the form below. </p>
+    <br/>
+    <b><u><a href="https://docs.google.com/forms/d/e/1FAIpQLSeSaxDEHEkGiyGiAOZZK_PO54KKTj0gqxW99_9TjkX8qgVxgg/viewform"> Task 1 Feedback </a></u></b>
+    <br/>
+    <p class="subtitle"> When you're done, please let the person running the study know. You will now provide some verbal feedback about each condition. </p>
+    <p> Afterward, you may click GO TO NEXT TASK. </p>
+<!--    Of the four conditions you just completed, which condition was your favorite for this task?-->
+<!--    <form class="task-results">-->
+<!--        <button type="button" class="btn btn-primary four-btn" id=1 onclick="setResult(this.id)">Mouse, 2D graph</button>-->
+<!--        <button type="button" class="btn btn-primary four-btn" id=2 onclick="setResult(this.id)">Mouse, 3D graph</button>-->
+<!--        <button type="button" class="btn btn-primary four-btn" id=3 onclick="setResult(this.id)">Trackball mouse, 3D graph</button>-->
+<!--        <button type="button" class="btn btn-primary four-btn" id=4 onclick="setResult(this.id)">Virtual Reality, 3D graph</button>-->
+<!--    </form>-->
+
+    <a href="../task2/T2.html"><button type="button" class="btn btn-primary">Go to Next Task</button></a>
+</div>
+
+
+<script src="../../js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+    <div class="row user-info-header">
+        <div class="col-6">
+            Task 2: Count the number of triangles
+        </div>
+        <div class="col-6">
+            Condition: Trackball Mouse, 3D Graph
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div id="3d-graph" class="main-vis"></div> <br/>
+
+        <p class="center">
+            Input the number of triangles on the next page.
+        </p>
+
+        <button type="button" class="btn btn-primary" onclick="stopTimer(); askInput();">Input Number</button>
+
+        <div class="stopwatch" id="timer" style="display: none;"></div>
+    </div>
+
+    <script>
+
+        function updateTextInput(val) {
+            document.getElementById('rangeVal').value = val;
+        }
+
+        function incrementTri() {
+            document.getElementById('sliderVal').value = parseInt(document.getElementById('sliderVal').value) + 1;
+            document.getElementById('rangeVal').value = parseInt(document.getElementById('rangeVal').value) + 1;
+        }
+
+        function decrementTri() {
+            if (document.getElementById('rangeVal').value > 0) {
+                document.getElementById('sliderVal').value = parseInt(document.getElementById('sliderVal').value) - 1;
+                document.getElementById('rangeVal').value = parseInt(document.getElementById('rangeVal').value) - 1;
+            }
+        }
+
+        // parts of stopwatch code from https://jsbin.com/IgaXEVI/167/edit?html,js,output
+        var Stopwatch = function(elem, options) {
+
+            // set vars
+            var timer       = createTimer(),
+                offset,
+                clock,
+                interval,
+                zoomInterval;
+
+            // default options
+            options = options || {};
+            options.delay = options.delay || 1;
+            options.zoomDelay = 100;
+
+            // append elements
+            elem.appendChild(timer);
+
+            // initialize
+            reset();
+
+            // private functions
+            function createTimer() {
+                return document.createElement("span");
+            }
+
+            function start() {
+                if (!interval) {
+                    offset   = Date.now();
+                    interval = setInterval(update, options.delay);
+                    zoomInterval = setInterval(zoomCountFunc, options.delayZoom);
+                }
+            }
+
+            function stop() {
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                    localStorage.setItem("official_T2_C3_1", (clock/1000).toString())
+                    localStorage.setItem("oscore_T2_C3_1", inputVal.toString())
+                    localStorage.setItem("orealNum_T2_C3_1", totalTriangles.toString())
+                    localStorage.setItem("ozoom_T2_C3_1", zoomCount.toString())
+                    localStorage.setItem("opanCount_T2_C3_1", panCount.toString())
+                    localStorage.setItem("orotate_T2_C3_1", rotate.toString())
+                    official1T2C3();
+                }
+            }
+
+            function reset() {
+                clock = 0;
+                render(0);
+            }
+
+            function update() {
+                clock += delta();
+                render();
+            }
+
+            function zoomCountFunc() {
+                zoomCount.push(zoomAmt);
+                rotate.push(rotateAmt);
+                //console.log(zoomCount);
+            }
+
+            function render() {
+                timer.innerHTML = clock/1000;
+            }
+
+            function delta() {
+                var now = Date.now(),
+                    d   = now - offset;
+
+                offset = now;
+                return d;
+            }
+
+            // public API
+            this.start  = start;
+            this.stop   = stop;
+            this.reset  = reset;
+        };
+
+        // VARIABLES
+        let inputVal = 0;
+        let totalTriangles = 0;
+        let zoomAmt = 0;
+        let zoomCount = [];
+        let panCount = 0;
+        let rotateAmt = "";
+        let rotate = [];
+
+        function checkPan() {
+            panCount += 1;
+            console.log(panCount)
+        }
+
+        $('#3d-graph').on("contextmenu", function() {
+            checkPan();
+        })
+
+        // logs the value the user inputs using the slider
+        function logVal() {
+            inputVal = document.getElementById('rangeVal').value
+        }
+
+        // programmatic examples
+        let a = document.getElementById("timer");
+        timer = new Stopwatch(a);
+        timer.start();
+
+        function stopTimer() {
+            timer.stop();
+        }
+
+        const myGraph = ForceGraph3D();
+
+        myGraph(document.getElementById("3d-graph"))
+            .width(1250)
+            .height(600)
+            .warmupTicks(200)
+            .cooldownTicks(10)
+            .nodeColor(function(node) {
+                if (node.value > 0) {
+                    totalTriangles = node.value
+                }
+                if (node.value === 1) {
+                    return '#00BFFF'
+                } else if (selectedNodes.has(node)) {
+                    return 'red'
+                } else {
+                    return '#000000'
+                }
+            })
+            .forceEngine('ngraph')
+            .jsonUrl(localStorage.data1)
+            .backgroundColor("white")
+            .linkOpacity(.6)
+            .linkColor(link => '#999')
+            .linkWidth(.5)
+            // .onNodeClick(function(node, event) {
+            //     if (node.selected === 0) {
+            //         node.selected = 1
+            //         this.nodeColor("red")
+            //
+            //         if (node.value === 2) {
+            //             score += 1
+            //         }
+            //         totalNodes += 1;
+            //     } else {
+            //         node.selected = 0
+            //
+            //         if (node.value === 2) {
+            //             score -= 1
+            //         }
+            //         totalNodes -= 1;
+            //     }
+            //
+            //     if (event.ctrlKey || event.shiftKey || event.altKey) {
+            //         selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+            //     } else {
+            //         selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+            //     }
+            //
+            //     myGraph.nodeColor(myGraph.nodeColor());
+            // })
+
+        let selectedNodes = new Set();
+
+        window.scene = myGraph.scene();
+
+        var graph = document.getElementsByClassName("scene-container")[0];
+
+        graph.requestPointerLock = graph.requestPointerLock ||
+            graph.mozRequestPointerLock;
+
+        document.exitPointerLock = document.exitPointerLock ||
+            document.mozExitPointerLock;
+
+        document.onclick = function() {
+            graph.requestPointerLock();
+        };
+
+        document.addEventListener('pointerlockchange', lockChangeAlert, false);
+        document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+        graph.addEventListener('mousewheel', mousewheel, false );
+
+        function lockChangeAlert() {
+            if (document.pointerLockElement === graph ||
+                document.mozPointerLockElement === graph) {
+                console.log('The pointer lock status is now locked');
+                document.addEventListener("mousemove", moveToRotate, false);
+            } else {
+                console.log('The pointer lock status is now unlocked');
+                document.removeEventListener("mousemove", moveToRotate, false);
+            }
+        }
+
+        function moveToRotate(e){
+
+            myGraph.scene().children[3].rotation.y += e.movementX/100;
+            myGraph.scene().children[3].rotation.x += e.movementY/100;
+
+            let rotateAmtx = myGraph.scene().children[3].rotation.x
+            let rotateAmty = myGraph.scene().children[3].rotation.y
+            rotateAmt = "(" + rotateAmtx + ", " + rotateAmty +")"
+
+            x += e.movementX;
+            y += e.movementY;
+
+            console.log("x "  + x + " y " + y)
+        }
+
+        // //document.addEventListener('mousedown', pan, false );
+        //
+
+        let x = 0;
+        let y = 0;
+
+        function mousewheel(e) {
+
+            var d = ((typeof e.wheelDelta != "undefined")?(-e.wheelDelta):e.detail);
+            d = 100 * ((d>0)?1:-1);
+            var cPos = myGraph.camera().position;
+            if (isNaN(cPos.x) || isNaN(cPos.y) || isNaN(cPos.y)) return;
+
+            mb = d>0 ? 1.1 : 0.9;
+            cPos.x = cPos.x * mb;
+            cPos.y = cPos.y * mb;
+            cPos.z = cPos.z * mb;
+        }
+
+        let camera = myGraph.camera();
+
+        function animate() {
+            requestAnimationFrame( animate );
+            zoomAmt = camera.position.z;
+        }
+
+        animate();
+
+        function askInput() {
+            document.body.innerHTML = "";
+            document.body.innerHTML =
+                "<div class=\"row user-info-header\">\n" +
+                "    <div class=\"col-6\">\n" +
+                "        Task 2: Select the common nodes between two highlighted nodes\n" +
+                "    </div>\n" +
+                "    <div class=\"col-6\">\n" +
+                "        Condition: Trackball Mouse, 3D Graph\n" +
+                "    </div>\n" +
+                "</div>\n" +
+                "\n" +
+                "<div class=\"page-container\">\n" +
+                "    <h1> Use the slider to input the number of triangles you counted.</h1> \n" +
+                "    <p> Drag the slider and/or the + and - buttons. Click NEXT TRIAL to complete the second trial in this condition. </p> \n" +
+                "<div class=\"t2-slider\">\n" +
+                "        <input type=\"range\" name=\"amountRange\" id=\"sliderVal\" min=\"0\" max=\"50\" value=\"0\" onchange=\"updateTextInput(this.value);\" />\n" +
+                "        <input type=\"number\" name=\"amountInput\" id=\"rangeVal\" min=\"0\" max=\"50\" value=\"0\" onchange=\"amountRange.value=this.value\" />\n" +
+                "        <br/>\n" +
+                "        <button class=\"btn btn-primary scale-answer\" onclick=\"decrementTri()\">-</button>\n" +
+                "        <button class=\"btn btn-primary scale-answer\" onclick=\"incrementTri()\">+</button>\n" +
+                "</div>" +
+                "<a class=\"nextCondition\" href=\"T2C3officialH.html\">\n" +
+                "<button type=\"button\" class=\"btn btn-primary\" onclick='logVal();'>Next Trial</button> \n" +
+                "</a>" +
+                "</div>"
+            ;
+        }
+
+    </script>
+
+    <script src="../../js/main.js"></script>
+
+</body>
+</html>

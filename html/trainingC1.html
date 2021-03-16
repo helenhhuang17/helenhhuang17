@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6">
+        TRAINING: 2D Graph with Mouse
+    </div>
+</div>
+
+<div class="page-container">
+    <h1>MOUSE Training on 2D Graphs</h1>
+    <p>To operate the mouse: </p>
+    <ul>
+        <li> LEFT CLICK on a node to select it </li>
+        <li> LEFT CLICK and DRAG to pan your view of the graph</li>
+        <li> SCROLL using the scroll ring to zoom in and out of the screen </li>
+    </ul>
+    <p>Try out these functions below and select all the nodes on the screen. Let someone know if you have any issues.
+        Click NEXT to proceed to the next training.</p>
+
+    <svg width="1300" height="350"></svg> <br/>
+    <a href="trainingC2.html"><button type="button" class="btn btn-primary" onclick='stopTimer();'>Next</button></a>
+    <div class="stopwatch" id="timer" style="display: none;"></div>
+</div>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+    //parts of stopwatch code from https://jsbin.com/IgaXEVI/167/edit?html,js,output
+    var Stopwatch = function(elem, options) {
+
+        // set vars
+        var timer       = createTimer(),
+            offset,
+            clock,
+            interval;
+
+        // default options
+        options = options || {};
+        options.delay = options.delay || 1;
+
+        // append elements
+        elem.appendChild(timer);
+
+        // initialize
+        reset();
+
+        // private functions
+        function createTimer() {
+            return document.createElement("span");
+        }
+
+        function createButton(action, handler) {
+            var a = document.createElement("a");
+            a.href = "#" + action;
+            a.innerHTML = action;
+            a.addEventListener("click", function(event) {
+                handler();
+                event.preventDefault();
+            });
+            return a;
+        }
+
+        function start() {
+            if (!interval) {
+                offset   = Date.now();
+                interval = setInterval(update, options.delay);
+            }
+        }
+
+        function stop() {
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+                localStorage.setItem("training_C1", (clock/1000).toString())
+                training1();
+            }
+        }
+
+        function reset() {
+            clock = 0;
+            render(0);
+        }
+
+        function update() {
+            clock += delta();
+            render();
+        }
+
+        function render() {
+            timer.innerHTML = clock/1000;
+        }
+
+        function delta() {
+            var now = Date.now(),
+                d   = now - offset;
+
+            offset = now;
+            return d;
+        }
+
+        // public API
+        this.start  = start;
+        this.stop   = stop;
+        this.reset  = reset;
+    };
+
+    // programmatic examples
+    let a = document.getElementById("timer");
+    timer = new Stopwatch(a);
+    timer.start();
+
+    function stopTimer() {
+        timer.stop();
+    }
+
+    let svg = d3.select("svg")
+    width = +svg.attr("width"),
+        height = +svg.attr("height");
+
+    let color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    let simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(function(d) { return d.id; }))
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+    d3.json("../data/initialTraining/C1.json", function(error, graph) {
+        if (error) throw error;
+
+        console.log("hi342")
+
+        let g = svg.append("g")
+            .attr("class", "everything")
+            .style("width", "100%")
+            .style("height", "100%")
+
+        let link = g.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(graph.links)
+            .enter()
+            .append("line")
+
+        let node = g.append("g")
+            .attr("class", "nodes")
+            .selectAll("g")
+            .data(graph.nodes)
+            .enter()
+            .append("circle")
+            .attr("r", 5)
+            .on("click", function(event) {
+                if (event.selected === 0) {
+                    event.selected = 1
+                    d3.select(this)
+                        .style("fill", "red")
+                } else {
+                    event.selected = 0
+                    d3.select(this)
+                        .style("fill", "var(--node)")
+                }
+            })
+
+
+        //add zoom capabilities
+        let zoom_handler = d3.zoom()
+            .on("zoom", zoom_actions)
+
+        zoom_handler(svg);
+
+        //Zoom functions
+        function zoom_actions(){
+            g.attr("transform", d3.event.transform)
+        }
+
+        simulation
+            .nodes(graph.nodes)
+            .on("tick", ticked);
+
+        simulation.force("link")
+            .links(graph.links);
+
+        function ticked() {
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            node
+                .attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                })
+        }
+    });
+
+</script>
+
+<script src="../js/main.js"></script>
+
+</body>
+</html>

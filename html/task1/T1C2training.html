@@ -1,0 +1,217 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph@1"></script>
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6 white-border">
+        Task 1: Select the common nodes between two highlighted nodes
+    </div>
+    <div class="col-6">
+        Training: Mouse, 3D Graph
+    </div>
+</div>
+
+<div class="page-container">
+    <div class="row">
+        <div class="col">
+            <h1>MOUSE Training on 3D Graphs</h1>
+            <img src="../../images/mouse-img.png" class="training-img">
+            <p>To operate the mouse: </p>
+            <ul>
+                <li> LEFT CLICK on a node to select it </li>
+                <li> LEFT CLICK and DRAG to pan your view of the graph</li>
+                <li> RIGHT CLICK to pan your view of the graph</li>
+                <li> SCROLL using the scroll ring to zoom in and out of the screen </li>
+            </ul>
+            <p>Try out these functions on the graph on the right and select all the nodes on the screen. Let someone know if you have any issues.
+                When you are ready, click PRACTICE to begin the practice trials.</p>
+        </div>
+        <div class="col">
+            <div id="3d-graph" class="main-vis"></div> <br/>
+        </div>
+    </div>
+    <a href="T1C2practice1.html"><button type="button" class="btn btn-primary" onclick="stopTimer()">Practice</button></a>
+    <div class="stopwatch" id="timer" style="display: none"></div>
+</div>
+
+<script src="../../js/main.js"></script>
+
+<script>
+    // parts of stopwatch code from https://jsbin.com/IgaXEVI/167/edit?html,js,output
+    var Stopwatch = function(elem, options) {
+
+        // set vars
+        var timer       = createTimer(),
+            offset,
+            clock,
+            interval;
+
+        // default options
+        options = options || {};
+        options.delay = options.delay || 1;
+
+        // append elements
+        elem.appendChild(timer);
+
+        // initialize
+        reset();
+
+        // private functions
+        function createTimer() {
+            return document.createElement("span");
+        }
+
+        function createButton(action, handler) {
+            var a = document.createElement("a");
+            a.href = "#" + action;
+            a.innerHTML = action;
+            a.addEventListener("click", function(event) {
+                handler();
+                event.preventDefault();
+            });
+            return a;
+        }
+
+        function start() {
+            if (!interval) {
+                offset   = Date.now();
+                interval = setInterval(update, options.delay);
+            }
+        }
+
+        function stop() {
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+                localStorage.setItem("training_C2", (clock/1000).toString())
+                training2();
+            }
+        }
+
+        function reset() {
+            clock = 0;
+            render(0);
+        }
+
+        function update() {
+            clock += delta();
+            render();
+        }
+
+        function render() {
+            timer.innerHTML = clock/1000;
+        }
+
+        function delta() {
+            var now = Date.now(),
+                d   = now - offset;
+
+            offset = now;
+            return d;
+        }
+
+        // public API
+        this.start  = start;
+        this.stop   = stop;
+        this.reset  = reset;
+    };
+
+    // programmatic examples
+    let a = document.getElementById("timer");
+    timer = new Stopwatch(a);
+    timer.start();
+
+    function stopTimer() {
+        timer.stop();
+    }
+</script>
+
+<script>
+    // Inspiration from https://bl.ocks.org/vasturiano/02affe306ce445e423f992faeea13521 and node selection from https://github.com/vasturiano/3d-force-graph/blob/master/example/multi-selection/index.html
+    function getGraphDataSets() {
+        const loadDataSet = function(Graph) {
+            Graph
+                .width(600)
+                .height(540)
+                .warmupTicks(200)
+                .cooldownTicks(10)
+                .nodeColor(function(node) {
+                    if (selectedNodes.has(node)) {
+                        return 'red'
+                    } else {
+                        return '#000000'
+                    }
+                })
+                .forceEngine('ngraph')
+                .jsonUrl('../../data/miserables.json')
+                .backgroundColor("white")
+                .linkOpacity(.6)
+                .linkColor(link => '#999')
+                .linkWidth(.5)
+                .onNodeClick(function(node, event) {
+
+                    if (event.ctrlKey || event.shiftKey || event.altKey) {
+                        selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+                    } else {
+                        selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+                    }
+
+                    Graph.nodeColor(Graph.nodeColor()); // update color of selected nodes
+                })
+        };
+        return [loadDataSet];
+    }
+
+    let selectedNodes = new Set();
+
+    const Graph = ForceGraph3D()
+    (document.getElementById("3d-graph"));
+
+    let curDataSetIdx;
+    const dataSets = getGraphDataSets();
+
+    function loadData() {
+        curDataSetIdx = 0;
+        const dataSet = dataSets[curDataSetIdx];
+
+        Graph.resetProps(); // Wipe current state
+        dataSet(Graph); // Load data set
+
+    };
+
+    loadData();
+</script>
+
+</body>
+</html>

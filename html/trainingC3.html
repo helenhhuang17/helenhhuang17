@@ -1,0 +1,294 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thesis App</title>
+
+    <!-- CSS libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom CSS code -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- For making force directed graph-->
+    <script src="//unpkg.com/3d-force-graph"></script>
+<!--    <script src="//unpkg.com/3d-force-graph@1"></script>-->
+
+    <!-- For making ngraphs? -->
+    <script src="//unpkg.com/d3-dsv"></script>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+
+    <!-- Other -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="row user-info-header">
+    <div class="col-6">
+        TRAINING: 3D Graph with Trackball
+    </div>
+</div>
+
+<div class="page-container">
+    <div class="row">
+        <div class="col">
+            <h1>TRACKBALL Training on 3D Graphs</h1>
+            <p>The trackball is likely a new device for most people. This mouse is NOT supposed to move - it should stay stationary on the table.
+                To move the cursor, roll the blue ball using the underside of your fingers. The buttons to the left and right of the ball
+                work just like the left and right click buttons of a traditional mouse. </p>
+            <p> To operate the trackball: </p>
+            <ul>
+                <li> LEFT CLICK to rotate the graph. Your pointer will disappear and you can rotate the object using the trackball. </li>
+                <li> Press ESC on the keyboard to get the pointer back. </li>
+                <li> SCROLL using the scroll ring around the blue ball on the mouse to zoom in and out.  </li>
+                <li> To pan around the graph, press ESC then RIGHT CLICK while rolling the blue ball with your fingers. </li>
+            </ul>
+            <p>Try out these functions below and select all the nodes on the screen. Let someone know if you have any issues.
+                Click NEXT to proceed to the next training.</p>
+        </div>
+        <div class="col">
+            <div id="3d-graph"></div> <br/>
+        </div>
+    </div>
+
+    <a href="trainingC4.html"><button type="button" class="btn btn-primary" onclick="stopTimer()">Next</button></a>
+    <div class="stopwatch" id="timer" style="display: none;"></div>
+</div>
+
+<script src="../js/main.js"></script>
+
+<script>
+    // parts of stopwatch code from https://jsbin.com/IgaXEVI/167/edit?html,js,output
+    var Stopwatch = function(elem, options) {
+
+        // set vars
+        var timer       = createTimer(),
+            offset,
+            clock,
+            interval;
+
+        // default options
+        options = options || {};
+        options.delay = options.delay || 1;
+
+        // append elements
+        elem.appendChild(timer);
+
+        // initialize
+        reset();
+
+        // private functions
+        function createTimer() {
+            return document.createElement("span");
+        }
+
+        function createButton(action, handler) {
+            var a = document.createElement("a");
+            a.href = "#" + action;
+            a.innerHTML = action;
+            a.addEventListener("click", function(event) {
+                handler();
+                event.preventDefault();
+            });
+            return a;
+        }
+
+        function start() {
+            if (!interval) {
+                offset   = Date.now();
+                interval = setInterval(update, options.delay);
+            }
+        }
+
+        function stop() {
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+                localStorage.setItem("training_C3", (clock/1000).toString())
+                training3();
+            }
+        }
+
+        function reset() {
+            clock = 0;
+            render(0);
+        }
+
+        function update() {
+            clock += delta();
+            render();
+        }
+
+        function render() {
+            timer.innerHTML = clock/1000;
+        }
+
+        function delta() {
+            var now = Date.now(),
+                d   = now - offset;
+
+            offset = now;
+            return d;
+        }
+
+        // public API
+        this.start  = start;
+        this.stop   = stop;
+        this.reset  = reset;
+    };
+
+    // programmatic examples
+    let a = document.getElementById("timer");
+    timer = new Stopwatch(a);
+    timer.start();
+
+    function stopTimer() {
+        timer.stop();
+    }
+</script>
+
+<script>
+
+    const myGraph = ForceGraph3D();
+
+    myGraph(document.getElementById("3d-graph"))
+        .width(650)
+        .height(600)
+        .warmupTicks(200)
+        .cooldownTicks(10)
+        .nodeColor(function(node) {
+            if (node.value > 0) {
+                totalTriangles = node.value
+            }
+            if (node.value === 1) {
+                return '#000000'
+            } else if (selectedNodes.has(node)) {
+                return 'red'
+            } else {
+                return '#000000'
+            }
+        })
+        .forceEngine('ngraph')
+        .jsonUrl('../data/T3C3practiceOrig.json')
+        .backgroundColor("white")
+        .linkOpacity(.6)
+        .linkColor(link => '#999')
+        .linkWidth(.5)
+        .onNodeClick(function(node, event) {
+            if (node.selected === 0) {
+                node.selected = 1
+                this.nodeColor("red")
+
+                if (node.value === 2) {
+                    score += 1
+                }
+                totalNodes += 1;
+            } else {
+                node.selected = 0
+
+                if (node.value === 2) {
+                    score -= 1
+                }
+                totalNodes -= 1;
+            }
+
+            if (event.ctrlKey || event.shiftKey || event.altKey) {
+                selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+            } else {
+                selectedNodes.has(node) ? selectedNodes.delete(node) : selectedNodes.add(node);
+            }
+
+            Graph.nodeColor(Graph.nodeColor());
+        })
+
+    let selectedNodes = new Set();
+
+    window.scene = myGraph.scene();
+
+    console.log(myGraph.state)
+
+    // const orbit = new THREE.OrbitControls(camera, renderer.domElement);
+    // orbit.enableRotate = false;
+    // orbit.enablePan = true;
+    // orbit.mouseButtons = { LEFT: THREE.MOUSE.PAN };
+    // orbit.touches = {
+    //     ONE: THREE.TOUCH.DOLLY_PAN
+    // }
+
+    // orbit.addEventListener('change', render);
+
+    var graph = document.getElementsByClassName("scene-container")[0];
+
+    graph.requestPointerLock = graph.requestPointerLock ||
+        graph.mozRequestPointerLock;
+
+    document.exitPointerLock = document.exitPointerLock ||
+        document.mozExitPointerLock;
+
+    document.onclick = function() {
+        graph.requestPointerLock();
+    };
+
+    document.addEventListener('pointerlockchange', lockChangeAlert, false);
+    document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+    graph.addEventListener('mousewheel', mousewheel, false );
+
+    function lockChangeAlert() {
+        if (document.pointerLockElement === graph ||
+            document.mozPointerLockElement === graph) {
+            console.log('The pointer lock status is now locked');
+            document.addEventListener("mousemove", moveToRotate, false);
+        } else {
+            console.log('The pointer lock status is now unlocked');
+            document.removeEventListener("mousemove", moveToRotate, false);
+        }
+    }
+
+    function moveToRotate(e){
+
+        myGraph.scene().children[3].rotation.y += e.movementX/100;
+        myGraph.scene().children[3].rotation.x += e.movementY/100;
+
+        x += e.movementX;
+        y += e.movementY;
+
+        console.log("x "  + x + " y " + y)
+    }
+
+    // //document.addEventListener('mousedown', pan, false );
+    //
+
+    let x = 0;
+    let y = 0;
+
+    function mousewheel(e) {
+
+        var d = ((typeof e.wheelDelta != "undefined")?(-e.wheelDelta):e.detail);
+        d = 100 * ((d>0)?1:-1);
+        var cPos = myGraph.camera().position;
+        if (isNaN(cPos.x) || isNaN(cPos.y) || isNaN(cPos.y)) return;
+
+        mb = d>0 ? 1.1 : 0.9;
+        cPos.x = cPos.x * mb;
+        cPos.y = cPos.y * mb;
+        cPos.z = cPos.z * mb;
+    }
+
+
+</script>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+</body>
+</html>
